@@ -63,7 +63,7 @@
                                 {{ $attachment->file_name }} 
                                 <small>({{ number_format($attachment->size / 1024, 2) }} KB)</small>
                             </span>
-                            <a href="{{ asset('storage/' . $attachment->file_path) }}" class="btn btn-primary btn-small" download>Lejupielādēt</a>
+                            <a href="{{ route('attachments.download', $attachment) }}" class="btn btn-primary btn-small">Lejupielādēt</a>
                         </li>
                     @endforeach
                 </ul>
@@ -129,6 +129,20 @@
                                 <option value="closed" {{ $ticket->status == 'closed' ? 'selected' : '' }}>Slēgta</option>
                             </select>
                             <button type="submit" class="btn btn-primary btn-small" style="width: 100%; margin-top: 0.5rem;">Atjaunināt</button>
+                        </form>
+
+                        <form method="POST" action="{{ route('tickets.assign', $ticket) }}" style="margin-bottom: 1rem;">
+                            @csrf
+                            @method('PATCH')
+                            <label style="font-size: 0.9rem;">Piešķirt IT speciālistu:</label>
+                            <select name="assigned_to" required style="font-size: 0.9rem;">
+                                @foreach($itStaff as $staff)
+                                    <option value="{{ $staff->id }}" {{ $ticket->assigned_to == $staff->id ? 'selected' : '' }}>
+                                        {{ $staff->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <button type="submit" class="btn btn-primary btn-small" style="width: 100%; margin-top: 0.5rem;">Piešķirt</button>
                         </form>
 
                         <form method="POST" action="{{ route('tickets.destroy', $ticket) }}" onsubmit="return confirm('Vai tiešam dzēst šo biļeti?');">

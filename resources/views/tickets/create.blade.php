@@ -104,8 +104,13 @@
 <script>
 const fileInput = document.getElementById('attachments');
 const fileList = document.getElementById('file-list');
+const dt = new DataTransfer();
 
 fileInput.addEventListener('change', function() {
+    for (const file of fileInput.files) {
+        dt.items.add(file);
+    }
+    fileInput.files = dt.files;
     updateFileList();
 });
 
@@ -129,6 +134,12 @@ function updateFileList() {
     }
 }
 
+function removeFile(index) {
+    dt.items.remove(index);
+    fileInput.files = dt.files;
+    updateFileList();
+}
+
 // Drag and drop
 const dropZone = document.querySelector('.file-upload-box');
 dropZone.addEventListener('dragover', (e) => {
@@ -143,7 +154,10 @@ dropZone.addEventListener('dragleave', () => {
 dropZone.addEventListener('drop', (e) => {
     e.preventDefault();
     dropZone.style.backgroundColor = '';
-    fileInput.files = e.dataTransfer.files;
+    for (const file of e.dataTransfer.files) {
+        dt.items.add(file);
+    }
+    fileInput.files = dt.files;
     updateFileList();
 });
 </script>

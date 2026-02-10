@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ticket;
 use App\Models\TicketComment;
 use App\Models\TicketAttachment;
+use App\Models\User;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -116,7 +117,11 @@ class TicketController extends Controller
         }
 
         $ticket->load('user', 'comments.user', 'attachments', 'assignedTo');
-        return view('tickets.show', compact('ticket'));
+        $itStaff = Auth::user()->isAdmin()
+            ? User::where('role', 'admin')->orderBy('name')->get()
+            : collect();
+
+        return view('tickets.show', compact('ticket', 'itStaff'));
     }
 
     /**
@@ -195,6 +200,24 @@ class TicketController extends Controller
     }
 
     /**
+     * Download an attachment (owner or admin only).
+     */
+    public function downloadAttachment(TicketAttachment $attachment)
+    {
+        $ticket = $attachment->ticket()->with('user')->first();
+
+        if (!Auth::user()->isAdmin() && Auth::id() !== $ticket->user_id) {
+            abort(403);
+        }
+
+        if (!Storage::disk('public')->exists($attachment->file_path)) {
+            abort(404);
+        }
+
+        return Storage::disk('public')->download($attachment->file_path, $attachment->file_name);
+    }
+
+    /**
      * Delete ticket.
      */
     public function destroy(Ticket $ticket)
@@ -218,6 +241,14 @@ class TicketController extends Controller
         $this->authorizeAdmin();
 
         $tickets = Ticket::all();
+        $tz = 'Europe/Riga';
+        $calendarTickets = $tickets->map(function ($ticket) use ($tz) {
+            return [
+                'id' => $ticket->id,
+                'priority' => $ticket->priority,
+                'created_date_local' => $ticket->created_at->timezone($tz)->toDateString(),
+            ];
+        });
         
         $stats = [
             'total' => $tickets->count(),
@@ -226,7 +257,7 @@ class TicketController extends Controller
             'closed' => $tickets->where('status', 'closed')->count(),
         ];
         
-        return view('tickets.calendar', compact('tickets', 'stats'));
+        return view('tickets.calendar', compact('tickets', 'stats', 'calendarTickets'));
     }
 
     /**
@@ -241,7 +272,8 @@ class TicketController extends Controller
         }
 
         $tickets = Ticket::all();
-        $now = Carbon::now();
+        $tz = 'Europe/Riga';
+        $now = Carbon::now($tz);
         $months = [];
 
         for ($i = 0; $i < 3; $i++) {
@@ -253,8 +285,8 @@ class TicketController extends Controller
                 $date = $monthStart->copy()->day($day);
                 $dateStr = $date->toDateString();
 
-                $dayTickets = $tickets->filter(function ($ticket) use ($dateStr) {
-                    return $ticket->created_at->toDateString() === $dateStr;
+                $dayTickets = $tickets->filter(function ($ticket) use ($dateStr, $tz) {
+                    return $ticket->created_at->timezone($tz)->toDateString() === $dateStr;
                 })->values();
 
                 $days[] = [

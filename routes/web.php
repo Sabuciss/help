@@ -44,6 +44,9 @@ Route::middleware('auth')->group(function () {
     // Comments
     Route::post('/tickets/{ticket}/comments', [TicketCommentController::class, 'store'])->name('comments.store');
     Route::delete('/comments/{comment}', [TicketCommentController::class, 'destroy'])->name('comments.destroy');
+
+    // Attachments
+    Route::get('/attachments/{attachment}/download', [TicketController::class, 'downloadAttachment'])->name('attachments.download');
     
     // Admin routes
     Route::middleware('admin')->group(function () {

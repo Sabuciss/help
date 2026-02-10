@@ -49,6 +49,12 @@
 </div>
 
 <script>
+const calendarTimeZone = 'Europe/Riga';
+
+function formatLocalDate(date) {
+    return date.toLocaleDateString('en-CA', { timeZone: calendarTimeZone });
+}
+
 function renderMonth(year, month, tickets, now) {
     const monthNames = ['Janvāris', 'Februāris', 'Marts', 'Aprīlis', 'Maijs', 'Jūnijs',
                        'Jūlijs', 'Augusts', 'Septembris', 'Oktobris', 'Novembris', 'Decembris'];
@@ -79,14 +85,13 @@ function renderMonth(year, month, tickets, now) {
     // Days of month
     for (let day = 1; day <= daysInMonth; day++) {
         const date = new Date(year, month, day);
-        const dateStr = date.toISOString().split('T')[0];
+            const dateStr = formatLocalDate(date);
         
         const dayTickets = tickets.filter(t => {
-            const ticketDate = new Date(t.created_at).toISOString().split('T')[0];
-            return ticketDate === dateStr;
+                return t.created_date_local === dateStr;
         });
         
-        const isToday = date.toDateString() === now.toDateString();
+            const isToday = formatLocalDate(date) === formatLocalDate(now);
         
         let backgroundColor = '#f9f9f9';
         if (isToday) backgroundColor = '#e3f2fd';
@@ -116,10 +121,11 @@ function renderMonth(year, month, tickets, now) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    const tickets = @json($tickets);
+        const tickets = @json($calendarTickets);
     const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth();
+    const lvNow = new Date(now.toLocaleString('en-US', { timeZone: calendarTimeZone }));
+        const currentYear = lvNow.getFullYear();
+        const currentMonth = lvNow.getMonth();
     
     let calendarHTML = '';
     
