@@ -81,6 +81,21 @@
                     <small style="color: #7f8c8d;">{{ $ticket->user->email }}</small>
                 </p>
 
+                <p style="margin-bottom: 1rem;">
+                    <strong>Vārds, uzvārds:</strong><br>
+                    {{ $ticket->first_name ?? '-' }} {{ $ticket->last_name ?? '' }}
+                </p>
+
+                <p style="margin-bottom: 1rem;">
+                    <strong>Klase / Nodaļa:</strong><br>
+                    {{ $ticket->class_department ?? '-' }}
+                </p>
+
+                <p style="margin-bottom: 1rem;">
+                    <strong>Kategorija:</strong><br>
+                    {{ $ticket->category ? ucfirst($ticket->category) : '-' }}
+                </p>
+
                 @if($ticket->assignedTo)
                     <p style="margin-bottom: 1rem;">
                         <strong>Piešķirts:</strong><br>

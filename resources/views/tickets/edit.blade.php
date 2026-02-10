@@ -17,6 +17,43 @@
         @method('PATCH')
 
         <div class="form-group">
+            <label for="first_name">Vārds *</label>
+            <input type="text" id="first_name" name="first_name" value="{{ old('first_name', $ticket->first_name) }}" required>
+            @error('first_name')
+                <div class="error">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="last_name">Uzvārds *</label>
+            <input type="text" id="last_name" name="last_name" value="{{ old('last_name', $ticket->last_name) }}" required>
+            @error('last_name')
+                <div class="error">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="class_department">Klase / Nodaļa *</label>
+            <input type="text" id="class_department" name="class_department" value="{{ old('class_department', $ticket->class_department) }}" required>
+            @error('class_department')
+                <div class="error">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="category">Kategorija *</label>
+            <select id="category" name="category" required>
+                <option value="hardware" {{ old('category', $ticket->category) == 'hardware' ? 'selected' : '' }}>Hardware</option>
+                <option value="software" {{ old('category', $ticket->category) == 'software' ? 'selected' : '' }}>Software</option>
+                <option value="network" {{ old('category', $ticket->category) == 'network' ? 'selected' : '' }}>Network</option>
+                <option value="other" {{ old('category', $ticket->category) == 'other' ? 'selected' : '' }}>Cits</option>
+            </select>
+            @error('category')
+                <div class="error">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="form-group">
             <label for="title">Problēmas nosaukums *</label>
             <input type="text" id="title" name="title" value="{{ old('title', $ticket->title) }}" required>
             @error('title')

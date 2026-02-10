@@ -10,6 +10,7 @@
 <div class="card">
     <div class="card-header">
         <h2>Biļešu skaits pa dienām</h2>
+        <a href="{{ route('tickets.calendar-export') }}" class="btn btn-secondary">Eksportēt PDF</a>
     </div>
 
     <div id="calendar" style="display: grid; grid-template-columns: 1fr; gap: 2rem; margin: 2rem 0;">

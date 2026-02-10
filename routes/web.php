@@ -51,5 +51,6 @@ Route::middleware('auth')->group(function () {
         Route::patch('/tickets/{ticket}/status', [TicketController::class, 'updateStatus'])->name('tickets.update-status');
         Route::patch('/tickets/{ticket}/assign', [TicketController::class, 'assign'])->name('tickets.assign');
         Route::get('/admin/tickets/calendar', [TicketController::class, 'calendar'])->name('tickets.calendar');
+        Route::get('/admin/tickets/calendar/export', [TicketController::class, 'calendarExport'])->name('tickets.calendar-export');
     });
 });

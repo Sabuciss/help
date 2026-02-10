@@ -16,6 +16,43 @@
         @csrf
 
         <div class="form-group">
+            <label for="first_name">Vārds *</label>
+            <input type="text" id="first_name" name="first_name" value="{{ old('first_name') }}" required>
+            @error('first_name')
+                <div class="error">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="last_name">Uzvārds *</label>
+            <input type="text" id="last_name" name="last_name" value="{{ old('last_name') }}" required>
+            @error('last_name')
+                <div class="error">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="class_department">Klase / Nodaļa *</label>
+            <input type="text" id="class_department" name="class_department" value="{{ old('class_department') }}" required placeholder="Piemērs: 301. kabinets / Grāmatvedība">
+            @error('class_department')
+                <div class="error">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="category">Kategorija *</label>
+            <select id="category" name="category" required>
+                <option value="hardware" {{ old('category') == 'hardware' ? 'selected' : '' }}>Hardware</option>
+                <option value="software" {{ old('category') == 'software' ? 'selected' : '' }}>Software</option>
+                <option value="network" {{ old('category') == 'network' ? 'selected' : '' }}>Network</option>
+                <option value="other" {{ old('category') == 'other' ? 'selected' : '' }}>Cits</option>
+            </select>
+            @error('category')
+                <div class="error">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="form-group">
             <label for="title">Problēmas nosaukums *</label>
             <input type="text" id="title" name="title" value="{{ old('title') }}" required placeholder="Īss problēmas apraksts">
             @error('title')

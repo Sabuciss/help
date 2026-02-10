@@ -14,6 +14,10 @@ return new class extends Migration
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('class_department');
+            $table->string('category');
             $table->string('title');
             $table->text('description');
             $table->enum('status', ['open', 'in_progress', 'resolved', 'closed'])->default('open');
@@ -21,10 +25,10 @@ return new class extends Migration
             $table->foreignId('assigned_to')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();
-            
             $table->index('status');
             $table->index('user_id');
             $table->index('assigned_to');
+            $table->index('category');
         });
     }
 

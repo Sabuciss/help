@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Ticket;
 use App\Models\TicketComment;
 use App\Models\TicketAttachment;
+use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -23,13 +25,29 @@ class TicketController extends Controller
     /**
      * Show all tickets (admin view).
      */
-    public function adminIndex()
+    public function adminIndex(Request $request)
     {
         $this->authorizeAdmin();
         
-        $tickets = Ticket::with('user', 'assignedTo', 'comments')
-            ->latest()
-            ->paginate(15);
+        $query = Ticket::with('user', 'assignedTo', 'comments');
+
+        if ($request->filled('id')) {
+            $query->where('id', $request->input('id'));
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        if ($request->filled('priority')) {
+            $query->where('priority', $request->input('priority'));
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->input('category'));
+        }
+
+        $tickets = $query->latest()->paginate(15)->appends($request->query());
         
         return view('tickets.admin-index', compact('tickets'));
     }
@@ -48,6 +66,10 @@ class TicketController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'first_name' => 'required|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'class_department' => 'required|string|max:255',
+            'category' => 'required|in:hardware,software,network,other',
             'title' => 'required|string|max:255',
             'description' => 'required|string|min:10',
             'priority' => 'required|in:low,medium,high,urgent',
@@ -55,6 +77,10 @@ class TicketController extends Controller
         ]);
 
         $ticket = Auth::user()->tickets()->create([
+            'first_name' => $validated['first_name'],
+            'last_name' => $validated['last_name'],
+            'class_department' => $validated['class_department'],
+            'category' => $validated['category'],
             'title' => $validated['title'],
             'description' => $validated['description'],
             'priority' => $validated['priority'],
@@ -121,6 +147,10 @@ class TicketController extends Controller
         }
 
         $validated = $request->validate([
+            'first_name' => 'required|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'class_department' => 'required|string|max:255',
+            'category' => 'required|in:hardware,software,network,other',
             'title' => 'required|string|max:255',
             'description' => 'required|string|min:10',
             'priority' => 'required|in:low,medium,high,urgent',
@@ -197,6 +227,53 @@ class TicketController extends Controller
         ];
         
         return view('tickets.calendar', compact('tickets', 'stats'));
+    }
+
+    /**
+     * Export calendar view to PDF (admin only).
+     */
+    public function calendarExport()
+    {
+        $this->authorizeAdmin();
+
+        if (!class_exists(Pdf::class)) {
+            abort(500, 'PDF eksportam nepieciešams barryvdh/laravel-dompdf.');
+        }
+
+        $tickets = Ticket::all();
+        $now = Carbon::now();
+        $months = [];
+
+        for ($i = 0; $i < 3; $i++) {
+            $monthStart = $now->copy()->startOfMonth()->addMonths($i);
+            $monthEnd = $monthStart->copy()->endOfMonth();
+            $days = [];
+
+            for ($day = 1; $day <= $monthEnd->day; $day++) {
+                $date = $monthStart->copy()->day($day);
+                $dateStr = $date->toDateString();
+
+                $dayTickets = $tickets->filter(function ($ticket) use ($dateStr) {
+                    return $ticket->created_at->toDateString() === $dateStr;
+                })->values();
+
+                $days[] = [
+                    'date' => $date->copy(),
+                    'tickets' => $dayTickets,
+                ];
+            }
+
+            $months[] = [
+                'month' => $monthStart->copy(),
+                'days' => $days,
+            ];
+        }
+
+        $pdf = Pdf::loadView('tickets.calendar-pdf', [
+            'months' => $months,
+        ]);
+
+        return $pdf->download('tickets-calendar.pdf');
     }
 
     /**
