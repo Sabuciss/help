@@ -1,24 +1,38 @@
 <nav class="navbar">
-    <div>
-        <h1>🎫 IT Help Desk</h1>
-    </div>
-    <div class="navbar-links">
+    <div class="navbar-container">
         @auth
             @if(Auth::user()->isAdmin())
-                <a href="{{ route('tickets.admin-index') }}">Visas biļetes</a>
-                <a href="{{ route('tickets.calendar') }}">Kalendārs</a>
+                <a href="{{ route('home') }}" class="home-link">🎫 IT Help Desk</a>
+
+                <div class="navbar-links">
+                    <a href="{{ route('tickets.admin-index') }}" class="{{ request()->routeIs('tickets.admin-index') ? 'active' : '' }}">Visas biļetes</a>
+                    <a href="{{ route('tickets.calendar') }}" class="{{ request()->routeIs('tickets.calendar') ? 'active' : '' }}">Kalendārs</a>
+                </div>
             @else
-                <a href="{{ route('tickets.index') }}">Manas biļetes</a>
-                <a href="{{ route('tickets.create') }}">Jauna biļete</a>
+                <a href="{{ route('home') }}" class="home-link">🎫 IT Help Desk</a>
+                
+                <div class="navbar-links">
+                    <a href="{{ route('tickets.index') }}" class="{{ request()->routeIs('tickets.index') ? 'active' : '' }}">Manas biļetes</a>
+                    <a href="{{ route('tickets.create') }}" class="{{ request()->routeIs('tickets.create') ? 'active' : '' }}">Jauna biļete</a>
+                </div>
             @endif
-            <span style="color: white;">{{ Auth::user()->name }}</span>
-            <form method="POST" action="{{ route('logout') }}" style="display:inline;">
-                @csrf
-                <button type="submit" style="background: none; border: none; color: white; cursor: pointer; text-decoration: underline;">Izlogoties</button>
-            </form>
         @else
-            <a href="{{ route('login') }}">Pieslēgties</a>
-            <a href="{{ route('register') }}">Reģistrēties</a>
+            <a href="{{ route('home') }}" class="home-link">🎫 IT Help Desk</a>
         @endauth
     </div>
+
+    @auth
+        <div class="navbar-end">
+            <span style="color: white;">Welcome, {{ Auth::user()->name }}!</span>
+            <form method="POST" action="{{ route('logout') }}" style="display:inline;">
+                @csrf
+                <button type="submit" class="btn-logout">Izlogoties</button>
+            </form>
+        </div>
+    @else
+        <div class="navbar-actions">
+            <a href="{{ route('login') }}" class="btn-login">Pieslēgties</a>
+            <a href="{{ route('register') }}" class="btn-register">Reģistrēties</a>
+        </div>
+    @endauth
 </nav>

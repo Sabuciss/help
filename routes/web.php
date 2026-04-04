@@ -8,8 +8,8 @@ Route::get('/', function () {
     if (Auth::check() && Auth::user()->isAdmin()) {
         return redirect()->route('tickets.admin-index');
     }
-    return view('welcome');
-});
+    return view('home');
+})->name('home');
 
 // Auth Routes
 Route::get('/login', function () {

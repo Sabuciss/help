@@ -18,7 +18,7 @@
         <div class="stat-box-label">Atrisinātas</div>
     </div>
     <div class="stat-box">
-        <div class="stat-box-number">{{ Illuminate\Support\Facades\DB::table('tickets')->where('status', 'urgent')->count() }}</div>
+        <div class="stat-box-number">{{ Illuminate\Support\Facades\DB::table('tickets')->where('priority', 'urgent')->count() }}</div>
         <div class="stat-box-label">Steidzamas</div>
     </div>
 </div>
