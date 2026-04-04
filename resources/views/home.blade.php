@@ -3,84 +3,67 @@
 @section('title', 'IT Help Desk - Mājas lapa')
 
 @section('content')
-<div style="text-align: center; padding: 3rem 0;">
-    <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">🎫 IT Help Desk System</h1>
-    <p style="font-size: 1.2rem; color: #7f8c8d; margin-bottom: 2rem;">Iesūtiet IT problēmas un saņemiet ātru atbalstu no mūsu IT personāla</p>
+
+<!-- HERO -->
+<div class="hero">
+    <h1>🎫 IT Help Desk</h1>
+    <p>Ātrs, vienkāršs un gudrs veids, kā pārvaldīt IT problēmas bez haosa</p>
 
     @auth
-        <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem;">
+        <div class="hero-actions">
             @if(Auth::user()->isAdmin())
-                <a href="{{ route('tickets.admin-index') }}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">
-                    📋 Visas biļetes
+                <a href="{{ route('tickets.admin-index') }}" class="btn btn-primary">
+                    📋 Skatīt visas biļetes
                 </a>
-                <a href="{{ route('tickets.calendar') }}" class="btn btn-secondary" style="font-size: 1.1rem; padding: 1rem 2rem;">
-                    📅 Kalendārs
+                <a href="{{ route('tickets.calendar') }}" class="btn btn-secondary">
+                    📅 Atvērt kalendāru
                 </a>
             @else
-                <a href="{{ route('tickets.create') }}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">
-                    ✏️ Iesūtīt jaunu biļeti
+                <a href="{{ route('tickets.create') }}" class="btn btn-primary">
+                    ✏️ Izveidot biļeti
                 </a>
-                <a href="{{ route('tickets.index') }}" class="btn btn-secondary" style="font-size: 1.1rem; padding: 1rem 2rem;">
+                <a href="{{ route('tickets.index') }}" class="btn btn-secondary">
                     👁️ Manas biļetes
                 </a>
             @endif
         </div>
     @else
-        <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem;">
-            <a href="{{ route('login') }}" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;">
-                Pieslēgties
+        <div class="hero-actions">
+            <a href="{{ route('login') }}" class="btn btn-primary">
+                Pieslēgities
             </a>
-            <a href="{{ route('register') }}" class="btn btn-secondary" style="font-size: 1.1rem; padding: 1rem 2rem;">
+            <a href="{{ route('register') }}" class="btn btn-secondary">
                 Reģistrēties
             </a>
         </div>
     @endauth
 </div>
 
-<!-- Features -->
-<div class="grid" style="margin-top: 3rem;">
-    <div class="card" style="text-align: center;">
-        <h3>👤 Lietotāji</h3>
-        <ul style="text-align: left; padding-left: 1rem; line-height: 2;">
-            <li>✓ Izveidot IT biļetes</li>
-            <li>✓ Apskatīt savas biļetes</li>
-            <li>✓ Rediģēt biļetes</li>
-            <li>✓ Pievienot pielikumus</li>
-            <li>✓ Komentēt biļetes</li>
-        </ul>
+<!-- FEATURES -->
+<div class="features">
+    <div class="feature-card">
+        <h3>⚡ Ātra biļešu izveide</h3>
+        <p>Izveido problēmu dažu sekunžu laikā un nekavējoties sāc tās risināšanu.</p>
     </div>
 
-    <div class="card" style="text-align: center;">
-        <h3>👨‍💼 IT Personāls</h3>
-        <ul style="text-align: left; padding-left: 1rem; line-height: 2;">
-            <li>✓ Redzēt visas biļetes</li>
-            <li>✓ Mainīt biļešu statusu</li>
-            <li>✓ Piešķirt biļetes</li>
-            <li>✓ Komentēt biļetes</li>
-            <li>✓ Biļešu kalendārs</li>
-        </ul>
+    <div class="feature-card">
+        <h3>📌 Prioritāšu sistēma</h3>
+        <p>Atzīmē steidzamas problēmas un pārliecinies, ka svarīgākais tiek risināts pirmais.</p>
     </div>
 
-    <div class="card" style="text-align: center;">
-        <h3>📊 Funkcionalitāte</h3>
-        <ul style="text-align: left; padding-left: 1rem; line-height: 2;">
-            <li>✓ Prioritāšu sistēma</li>
-            <li>✓ Statusa izsekošana</li>
-            <li>✓ Failu pielikumi</li>
-            <li>✓ Komentāru sistēma</li>
-            <li>✓ Meklēšana un filtrēšana</li>
-        </ul>
+    <div class="feature-card">
+        <h3>💬 Komentāri & komunikācija</h3>
+        <p>Sazinies vienkārši tieši biļetē bez e-pastiem un lieka haosa.</p>
     </div>
 
-    <div class="card" style="text-align: center;">
-        <h3>🔒 Drošība</h3>
-        <ul style="text-align: left; padding-left: 1rem; line-height: 2;">
-            <li>✓ Lietotāju autentifikācija</li>
-            <li>✓ Lomu un atļauju sistēma</li>
-            <li>✓ Drošas datu pārsūtīšana</li>
-            <li>✓ CSRF aizsardzība</li>
-            <li>✓ Datu validācija</li>
-        </ul>
+    <div class="feature-card">
+        <h3>📎 Failu pielikumi</h3>
+        <p>Pievieno ekrānšāviņus un failus, lai problēmu saprastu ātrāk.</p>
+    </div>
+
+    <div class="feature-card">
+        <h3>📊 Statusa izsekošana</h3>
+        <p>Redzi, kas notiek ar tavu biļeti reāllaikā bez minēšanas spēlēm.</p>
     </div>
 </div>
 

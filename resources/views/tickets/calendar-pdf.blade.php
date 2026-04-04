@@ -4,18 +4,65 @@
     <meta charset="UTF-8">
     <title>Biļešu kalendārs</title>
     <style>
-        body { font-family: DejaVu Sans, sans-serif; color: #222; font-size: 12px; }
-        h1 { font-size: 18px; margin-bottom: 12px; }
-        h2 { font-size: 14px; margin: 16px 0 8px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
-        th, td { border: 1px solid #ccc; padding: 6px; vertical-align: top; }
-        th { background: #f2f2f2; text-align: left; }
-        .muted { color: #777; }
-        .badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 10px; }
-        .badge-open { background: #e8f4f8; }
-        .badge-in_progress { background: #fff3cd; }
-        .badge-resolved { background: #d1f2eb; }
-        .badge-closed { background: #f8d7da; }
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            color: #222;
+            font-size: 12px;
+        }
+
+        h1 {
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        h2 {
+            font-size: 14px;
+            margin: 16px 0 8px;
+        }
+
+        table { 
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 14px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 6px;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f2f2f2;
+            text-align: left;
+        }
+
+        .muted {
+            color: #777;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+        }
+
+        .badge-open {
+            background: #e8f4f8;
+        }
+
+        .badge-in_progress {
+            background: #fff3cd;
+        }
+
+        .badge-resolved {
+            background: #d1f2eb;
+        }
+
+        .badge-closed {
+            background: #f8d7da;
+        }
     </style>
 </head>
 <body>

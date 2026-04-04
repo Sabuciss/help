@@ -130,7 +130,6 @@ function showMessage(message, type) {
 
 
 // calendar script
-
 const calendarTimeZone = 'Europe/Riga';
 
 function formatLocalDate(date) {
@@ -138,25 +137,24 @@ function formatLocalDate(date) {
 }
 
 function renderMonth(year, month, tickets, now) {
-    const monthNames = ['Janvāris', 'Februāris', 'Marts', 'Aprīlis', 'Maijs', 'Jūnijs',
-                       'Jūlijs', 'Augusts', 'Septembris', 'Oktobris', 'Novembris', 'Decembris'];
-    const dayNames = ['Sv', 'P', 'O', 'T', 'C', 'P', 'S'];
+    const monthNames = ['Janvāris', 'Februāris', 'Marts', 'Aprīlis', 'Maijs', 'Jūnijs', 'Jūlijs', 'Augusts', 'Septembris', 'Oktobris', 'Novembris', 'Decembris'];
+    const dayNames = ['Pirmdiena', 'Otrdiena', 'Trešdiena', 'Ceturtdiena', 'Piektdiena', 'Sestdiena', 'Svētdiena'];
     
-    const firstDay = new Date(year, month, 1);
+    const firstDay = new Date(year, month, 0);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
     
     let monthHTML = `
-        <div style="grid-column: 1 / -1; display: grid; grid-template-columns: repeat(7, 1fr); gap: 1rem; padding: 1rem; background: #fff; border-radius: 5px;">
-            <div style="grid-column: 1 / -1; text-align: center; margin-bottom: 1rem; padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 5px; margin: 0;">
-                <h3 style="margin: 0;">${monthNames[month]} ${year}</h3>
+        <div class="calendar-month">
+            <div class="calendar-header">
+                <h3>${monthNames[month]} ${year}</h3>
             </div>
     `;
     
     // Day headers
     dayNames.forEach(day => {
-        monthHTML += `<div style="text-align: center; font-weight: bold; padding: 0.5rem; background: #f0f0f0; border-radius: 3px;">${day}</div>`;
+        monthHTML += `<div class="calendar-day-name">${day}</div>`;
     });
     
     // Empty cells before month starts
@@ -182,18 +180,10 @@ function renderMonth(year, month, tickets, now) {
         let urgentCount = dayTickets.filter(t => t.priority === 'urgent').length;
         
         monthHTML += `
-            <div style="
-                background-color: ${backgroundColor};
-                border: 1px solid #ddd;
-                padding: 0.75rem;
-                border-radius: 3px;
-                min-height: 80px;
-                cursor: pointer;
-                transition: background-color 0.3s;
-            " onmouseover="this.style.backgroundColor='#ecf0f1'" onmouseout="this.style.backgroundColor='${backgroundColor}'">
-                <strong style="display: block; margin-bottom: 0.5rem;">${day}</strong>
-                <small style="display: block; color: #7f8c8d;">${dayTickets.length} biļete(s)</small>
-                ${urgentCount > 0 ? `<span class="badge badge-urgent" style="font-size: 0.75rem;">${urgentCount} steidzama</span>` : ''}
+            <div class="calendar-day ${isToday ? 'today' : ''} ${dayTickets.length ? 'has-tickets' : ''}">
+                <strong>${day}</strong>
+                <small>${dayTickets.length} biļete(s)</small>
+                ${urgentCount > 0 ? `<span class="badge badge-urgent">${urgentCount} steidzama</span>` : ''}
             </div>
         `;
     }

@@ -144,7 +144,7 @@
                 @elseif(Auth::user()->id === $ticket->user_id && $ticket->status !== 'closed')
                     <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #bdc3c7;">
                         <div style="display: flex; gap: 0.5rem; flex-direction: column;">
-                            <a href="{{ route('tickets.edit', $ticket) }}" class="btn btn-secondary btn-small">Rediģēt</a>
+                            <a href="{{ route('tickets.edit', $ticket) }}" class="btn btn-secondary btn-small" style="text-align:center;">Rediģēt</a>
                             <form method="POST" action="{{ route('tickets.destroy', $ticket) }}" onsubmit="return confirm('Vai tiešam dzēst?');">
                                 @csrf
                                 @method('DELETE')
