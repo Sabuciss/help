@@ -3,10 +3,6 @@
 @section('title', 'Visas biļetes')
 
 @section('content')
-<div class="breadcrumb">
-    <a href="/">Sākums</a> / Visas biļetes
-</div>
-
 <!-- Dashboard Stats -->
 <div class="grid">
     <div class="stat-box">

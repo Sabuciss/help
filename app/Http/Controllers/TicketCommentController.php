@@ -38,7 +38,7 @@ class TicketCommentController extends Controller
     public function destroy(TicketComment $comment)
     {
         // Only comment author or admin can delete
-        if (Auth::user()->id !== $comment->user_id && !Auth::user()->isAdmin()) {
+        if (Auth::user()->id !== $comment->user_id) {
             abort(403);
         }
 

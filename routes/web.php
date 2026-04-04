@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
 
     // Attachments
     Route::get('/attachments/{attachment}/download', [TicketController::class, 'downloadAttachment'])->name('attachments.download');
+    Route::delete('/attachments/{attachment}', [TicketController::class, 'destroyAttachment'])->name('attachments.destroy');
     
     // Admin routes
     Route::middleware('admin')->group(function () {

@@ -159,9 +159,24 @@ class TicketController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string|min:10',
             'priority' => 'required|in:low,medium,high,urgent',
+            'attachments.*' => 'file|max:10240',
         ]);
 
         $ticket->update($validated);
+
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                $path = $file->store('tickets/' . $ticket->id, 'public');
+                TicketAttachment::create([
+                    'ticket_id' => $ticket->id,
+                    'file_path' => $path,
+                    'file_name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getMimeType(),
+                    'size' => $file->getSize(),
+                    'uploaded_by' => Auth::id(),
+                ]);
+            }
+        }
 
         return redirect()->route('tickets.show', $ticket)
             ->with('success', 'Biļete veiksmīgi atjaunota!');
@@ -215,6 +230,34 @@ class TicketController extends Controller
         }
 
         return Storage::disk('public')->download($attachment->file_path, $attachment->file_name);
+    }
+
+    /**
+     * Delete attachment.
+     * Only deletes the attachment record and file, NOT the ticket itself.
+     */
+    public function destroyAttachment(TicketAttachment $attachment)
+    {
+        $ticket = $attachment->ticket()->with('user')->first();
+
+        if (!Auth::user()->isAdmin() && Auth::id() !== $ticket->user_id) {
+            abort(403);
+        }
+
+        // Delete the physical file from storage
+        if (Storage::disk('public')->exists($attachment->file_path)) {
+            Storage::disk('public')->delete($attachment->file_path);
+        }
+
+        // Delete only the attachment record, not the ticket
+        $attachment->delete();
+
+        // Return JSON response for AJAX requests
+        if (request()->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'Pielikums veiksmīgi dzēsts!']);
+        }
+
+        return redirect()->route('tickets.edit', $ticket)->with('success', 'Pielikums veiksmīgi dzēsts!');
     }
 
     /**

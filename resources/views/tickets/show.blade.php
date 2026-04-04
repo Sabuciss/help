@@ -3,16 +3,6 @@
 @section('title', $ticket->title)
 
 @section('content')
-<div class="breadcrumb">
-    <a href="/">Sākums</a> / 
-    @if(Auth::user()->isAdmin())
-        <a href="{{ route('tickets.admin-index') }}">Visas biļetes</a>
-    @else
-        <a href="{{ route('tickets.index') }}">Manas biļetes</a>
-    @endif
-    / {{ $ticket->title }}
-</div>
-
 <div class="card">
     <div class="card-header">
         <div>
@@ -177,7 +167,7 @@
                     <div class="comment-header">
                         <span class="comment-author">{{ $comment->user->name }}</span>
                         <span>{{ $comment->created_at->format('d.m.Y H:i') }}</span>
-                        @if(Auth::user()->id === $comment->user_id || Auth::user()->isAdmin())
+                        @if(Auth::user()->id === $comment->user_id)
                             <form method="POST" action="{{ route('comments.destroy', $comment) }}" style="display:inline;" onsubmit="return confirm('Dzēst komentāru?');">
                                 @csrf
                                 @method('DELETE')

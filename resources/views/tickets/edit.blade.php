@@ -3,16 +3,12 @@
 @section('title', 'Rediģēt biļeti')
 
 @section('content')
-<div class="breadcrumb">
-    <a href="/">Sākums</a> / <a href="{{ route('tickets.index') }}">Manas biļetes</a> / <a href="{{ route('tickets.show', $ticket) }}">{{ $ticket->title }}</a> / Rediģēt
-</div>
-
 <div class="card">
     <div class="card-header">
         <h2>Rediģēt biļeti</h2>
     </div>
 
-    <form method="POST" action="{{ route('tickets.update', $ticket) }}">
+    <form method="POST" action="{{ route('tickets.update', $ticket) }}" enctype="multipart/form-data">
         @csrf
         @method('PATCH')
 
@@ -78,6 +74,47 @@
                 <option value="urgent" {{ old('priority', $ticket->priority) == 'urgent' ? 'selected' : '' }}>Steidzama</option>
             </select>
             @error('priority')
+                <div class="error">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="attachments">Pielikumi (Attēli, Dokumenti)</label>
+
+            @if($ticket->attachments->count() > 0)
+                <div style="margin-bottom: 1rem;">
+                    <strong>Esošie pielikumi:</strong>
+                    <ul class="attachments-list" style="margin-top: 0.5rem;">
+                        @foreach($ticket->attachments as $attachment)
+                            <li data-attachment-id="{{ $attachment->id }}">
+                                <span>
+                                    @if(str_contains($attachment->mime_type, 'image'))
+                                        🖼️
+                                    @elseif($attachment->mime_type === 'application/pdf')
+                                        📄
+                                    @else
+                                        📎
+                                    @endif
+                                    {{ $attachment->file_name }}
+                                    <small>({{ number_format($attachment->size / 1024, 2) }} KB)</small>
+                                </span>
+                                <div>
+                                    <a href="{{ route('attachments.download', $attachment) }}" class="btn btn-primary btn-small">Lejupielādēt</a>
+                                    <button type="button" onclick="deleteAttachment({{ $attachment->id }}, '{{ $attachment->file_name }}')" class="btn btn-danger btn-small">Noņemt</button>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <div class="file-upload-box" onclick="document.getElementById('attachments').click();">
+                <p>Noklikšķiniet, lai augšupielādētu failus vai vienkārši pārvelciet tos šeit</p>
+                <small style="color: #7f8c8d;">Maksimums 10MB uz failu</small>
+            </div>
+            <input type="file" id="attachments" name="attachments[]" multiple style="display: none;" accept="image/*,.pdf,.doc,.docx">
+            <div id="file-list" style="margin-top: 1rem;"></div>
+            @error('attachments')
                 <div class="error">{{ $message }}</div>
             @enderror
         </div>

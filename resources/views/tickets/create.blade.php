@@ -3,10 +3,6 @@
 @section('title', 'Jauna biļete')
 
 @section('content')
-<div class="breadcrumb">
-    <a href="/">Sākums</a> / <a href="{{ route('tickets.index') }}">Manas biļetes</a> / Jauna biļete
-</div>
-
 <div class="card">
     <div class="card-header">
         <h2>Jauna IT biļete</h2>
@@ -100,65 +96,4 @@
         </div>
     </form>
 </div>
-
-<script>
-const fileInput = document.getElementById('attachments');
-const fileList = document.getElementById('file-list');
-const dt = new DataTransfer();
-
-fileInput.addEventListener('change', function() {
-    for (const file of fileInput.files) {
-        dt.items.add(file);
-    }
-    fileInput.files = dt.files;
-    updateFileList();
-});
-
-function updateFileList() {
-    fileList.innerHTML = '';
-    if (fileInput.files.length > 0) {
-        const list = document.createElement('ul');
-        list.className = 'attachments-list';
-        
-        for (let i = 0; i < fileInput.files.length; i++) {
-            const file = fileInput.files[i];
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <span>📎 ${file.name} (${(file.size / 1024).toFixed(2)} KB)</span>
-                <button type="button" onclick="removeFile(${i})" class="btn btn-danger btn-small">Noņemt</button>
-            `;
-            list.appendChild(li);
-        }
-        
-        fileList.appendChild(list);
-    }
-}
-
-function removeFile(index) {
-    dt.items.remove(index);
-    fileInput.files = dt.files;
-    updateFileList();
-}
-
-// Drag and drop
-const dropZone = document.querySelector('.file-upload-box');
-dropZone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropZone.style.backgroundColor = '#e8f4f8';
-});
-
-dropZone.addEventListener('dragleave', () => {
-    dropZone.style.backgroundColor = '';
-});
-
-dropZone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropZone.style.backgroundColor = '';
-    for (const file of e.dataTransfer.files) {
-        dt.items.add(file);
-    }
-    fileInput.files = dt.files;
-    updateFileList();
-});
-</script>
 @endsection

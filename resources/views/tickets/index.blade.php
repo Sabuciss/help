@@ -3,10 +3,6 @@
 @section('title', 'Manas biļetes')
 
 @section('content')
-<div class="breadcrumb">
-    <a href="/">Sākums</a> / Manas biļetes
-</div>
-
 <div class="card-header" style="margin-bottom: 2rem;">
     <h2>Manas biļetes</h2>
     <a href="{{ route('tickets.create') }}" class="btn btn-primary">Jauna biļete</a>
