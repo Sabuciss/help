@@ -99,7 +99,7 @@
                 </p>
 
                 <p style="margin-bottom: 1rem;">
-                    <strong>Pēdējā atjauninājuma:</strong><br>
+                    <strong>Pēdējais atjauninājums:</strong><br>
                     {{ $ticket->updated_at->format('d.m.Y H:i') }}
                 </p>
 
@@ -135,20 +135,24 @@
                             <button type="submit" class="btn btn-primary btn-small" style="width: 100%; margin-top: 0.5rem;">Piešķirt</button>
                         </form>
 
+                        <a href="{{ route('tickets.edit', $ticket) }}" class="btn btn-secondary btn-small" style="text-align:center; width:100%; margin:20px 0 10px 0;">
+                            Rediģēt Biļeti
+                        </a>
+
                         <form method="POST" action="{{ route('tickets.destroy', $ticket) }}" onsubmit="return confirm('Vai tiešam dzēst šo biļeti?');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-small" style="width: 100%;">Dzēst biļeti</button>
+                            <button type="submit" class="btn btn-danger btn-small" style="width: 100%;">Dzēst Biļeti</button>
                         </form>
                     </div>
                 @elseif(Auth::user()->id === $ticket->user_id && $ticket->status !== 'closed')
                     <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #bdc3c7;">
                         <div style="display: flex; gap: 0.5rem; flex-direction: column;">
-                            <a href="{{ route('tickets.edit', $ticket) }}" class="btn btn-secondary btn-small" style="text-align:center;">Rediģēt</a>
+                            <a href="{{ route('tickets.edit', $ticket) }}" class="btn btn-secondary btn-small" style="text-align:center;">Rediģēt Biļeti</a>
                             <form method="POST" action="{{ route('tickets.destroy', $ticket) }}" onsubmit="return confirm('Vai tiešam dzēst?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-small" style="width: 100%;">Dzēst</button>
+                                <button type="submit" class="btn btn-danger btn-small" style="width: 100%;">Dzēst Biļeti</button>
                             </form>
                         </div>
                     </div>

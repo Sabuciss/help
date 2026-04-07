@@ -130,6 +130,7 @@ function showMessage(message, type) {
 
 
 // calendar script
+// calendar script
 const calendarTimeZone = 'Europe/Riga';
 
 function formatLocalDate(date) {
@@ -165,25 +166,34 @@ function renderMonth(year, month, tickets, now) {
     // Days of month
     for (let day = 1; day <= daysInMonth; day++) {
         const date = new Date(year, month, day);
-            const dateStr = formatLocalDate(date);
-        
-        const dayTickets = tickets.filter(t => {
-                return t.created_date_local === dateStr;
-        });
-        
-            const isToday = formatLocalDate(date) === formatLocalDate(now);
-        
+        const dateStr = formatLocalDate(date);
+
+        // Tickets for this day
+        const dayTickets = tickets.filter(t => t.created_date_local === dateStr);
+
+        const isToday = formatLocalDate(date) === formatLocalDate(now);
+
+        // Background color
         let backgroundColor = '#f9f9f9';
         if (isToday) backgroundColor = '#e3f2fd';
         if (dayTickets.length > 0) backgroundColor = '#fff3cd';
-        
+
+        // Count urgent tickets
         let urgentCount = dayTickets.filter(t => t.priority === 'urgent').length;
-        
+
+        // Generate HTML for tickets: id + title
+        let ticketsHTML = '';
+        dayTickets.forEach(t => {
+            ticketsHTML += `<div class="calendar-ticket">#${t.id} - ${t.title}</div>`;
+        });
+
+        // Render the day
         monthHTML += `
-            <div class="calendar-day ${isToday ? 'today' : ''} ${dayTickets.length ? 'has-tickets' : ''}">
+            <div class="calendar-day ${isToday ? 'today' : ''} ${dayTickets.length ? 'has-tickets' : ''}" style="background-color: ${backgroundColor}; padding: 0.5rem; border-radius: 4px;">
                 <strong>${day}</strong>
                 <small>${dayTickets.length} biļete(s)</small>
-                ${urgentCount > 0 ? `<span class="badge badge-urgent">${urgentCount} steidzama</span>` : ''}
+                ${urgentCount > 0 ? `<span class="badge calendar-badge-urgent">${urgentCount} steidzama</span>` : ''}
+                <div class="calendar-tickets">${ticketsHTML}</div>
             </div>
         `;
     }

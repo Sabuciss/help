@@ -130,7 +130,7 @@ class TicketController extends Controller
     public function edit(Ticket $ticket)
     {
         // Only user who created it can edit (if not closed)
-        if (Auth::user()->id !== $ticket->user_id) {
+        if (Auth::user()->id !== $ticket->user_id && !Auth::user()->isAdmin()) {
             abort(403);
         }
 
@@ -151,20 +151,30 @@ class TicketController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:100',
-            'last_name' => 'required|string|max:100',
-            'class_department' => 'required|string|max:255',
+        // Base rules for all
+        $rules = [
             'category' => 'required|in:hardware,software,network,other',
-            'title' => 'required|string|max:255',
-            'description' => 'required|string|min:10',
             'priority' => 'required|in:low,medium,high,urgent',
-            'attachments.*' => 'file|max:10240',
-        ]);
+        ];
+
+        // Only normal users need to fill the rest
+        if (!Auth::user()->isAdmin()) {
+            $rules = array_merge($rules, [
+                'first_name' => 'required|string|max:100',
+                'last_name' => 'required|string|max:100',
+                'class_department' => 'required|string|max:255',
+                'title' => 'required|string|max:255',
+                'description' => 'required|string|min:10',
+                'attachments.*' => 'file|max:10240',
+            ]);
+        }
+
+        $validated = $request->validate($rules);
 
         $ticket->update($validated);
 
-        if ($request->hasFile('attachments')) {
+        // Handle file uploads only for normal users
+        if (!Auth::user()->isAdmin() && $request->hasFile('attachments')) {
             foreach ($request->file('attachments') as $file) {
                 $path = $file->store('tickets/' . $ticket->id, 'public');
                 TicketAttachment::create([
@@ -178,8 +188,7 @@ class TicketController extends Controller
             }
         }
 
-        return redirect()->route('tickets.show', $ticket)
-            ->with('success', 'Biļete veiksmīgi atjaunota!');
+        return redirect()->route('tickets.show', $ticket)->with('success', 'Biļete veiksmīgi atjaunota!');
     }
 
     /**
@@ -272,8 +281,11 @@ class TicketController extends Controller
 
         $ticket->delete();
 
-        return redirect()->route('tickets.index')
-            ->with('success', 'Biļete dzēsta!');
+        if(Auth::user()->isAdmin()) {
+            return redirect()->route('tickets.admin-index')->with('success', 'Biļete dzēsta!');
+        } else {
+            return redirect()->route('tickets.index')->with('success', 'Biļete dzēsta!');
+        }
     }
 
     /**
@@ -288,6 +300,7 @@ class TicketController extends Controller
         $calendarTickets = $tickets->map(function ($ticket) use ($tz) {
             return [
                 'id' => $ticket->id,
+                'title' => $ticket->title,
                 'priority' => $ticket->priority,
                 'created_date_local' => $ticket->created_at->timezone($tz)->toDateString(),
             ];

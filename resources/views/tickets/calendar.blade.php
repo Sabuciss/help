@@ -39,5 +39,7 @@
 <script>
     // Pass PHP data to JavaScript
     window.calendarData = @json($calendarTickets);
+    const tickets = window.calendarData;
+    console.log(tickets[0]);
 </script>
 @endsection
