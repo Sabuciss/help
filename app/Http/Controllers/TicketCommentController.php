@@ -20,7 +20,7 @@ class TicketCommentController extends Controller
         }
 
         $validated = $request->validate([
-            'comment' => 'required|string|min:2|max:2000',
+            'comment' => 'required|string|min:2|max:1000',
         ]);
 
         TicketComment::create([

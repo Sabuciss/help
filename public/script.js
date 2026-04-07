@@ -130,7 +130,6 @@ function showMessage(message, type) {
 
 
 // calendar script
-// calendar script
 const calendarTimeZone = 'Europe/Riga';
 
 function formatLocalDate(date) {
@@ -153,46 +152,37 @@ function renderMonth(year, month, tickets, now) {
             </div>
     `;
     
-    // Day headers
     dayNames.forEach(day => {
         monthHTML += `<div class="calendar-day-name">${day}</div>`;
     });
     
-    // Empty cells before month starts
     for (let i = 0; i < startingDayOfWeek; i++) {
         monthHTML += `<div></div>`;
     }
     
-    // Days of month
     for (let day = 1; day <= daysInMonth; day++) {
         const date = new Date(year, month, day);
         const dateStr = formatLocalDate(date);
 
-        // Tickets for this day
         const dayTickets = tickets.filter(t => t.created_date_local === dateStr);
-
         const isToday = formatLocalDate(date) === formatLocalDate(now);
 
-        // Background color
         let backgroundColor = '#f9f9f9';
         if (isToday) backgroundColor = '#e3f2fd';
         if (dayTickets.length > 0) backgroundColor = '#fff3cd';
 
-        // Count urgent tickets
         let urgentCount = dayTickets.filter(t => t.priority === 'urgent').length;
 
-        // Generate HTML for tickets: id + title
         let ticketsHTML = '';
         dayTickets.forEach(t => {
             ticketsHTML += `<div class="calendar-ticket">#${t.id} - ${t.title}</div>`;
         });
 
-        // Render the day
         monthHTML += `
             <div class="calendar-day ${isToday ? 'today' : ''} ${dayTickets.length ? 'has-tickets' : ''}" style="background-color: ${backgroundColor}; padding: 0.5rem; border-radius: 4px;">
                 <strong>${day}</strong>
                 <small>${dayTickets.length} biļete(s)</small>
-                ${urgentCount > 0 ? `<span class="badge calendar-badge-urgent">${urgentCount} steidzama</span>` : ''}
+                ${urgentCount > 0 ? `<span class="badge calendar-badge-urgent" style="margin-top:5px;">${urgentCount} Steidzama(s)</span>` : ''}
                 <div class="calendar-tickets">${ticketsHTML}</div>
             </div>
         `;
@@ -202,8 +192,61 @@ function renderMonth(year, month, tickets, now) {
     return monthHTML;
 }
 
+/* week view for mobile */
+function renderWeek(now, tickets) {
+    const dayNames = ['Svētdiena', 'Pirmdiena', 'Otrdiena', 'Trešdiena', 'Ceturtdiena', 'Piektdiena', 'Sestdiena'];
+    const monthNames = ['Janvāris', 'Februāris', 'Marts', 'Aprīlis', 'Maijs', 'Jūnijs', 'Jūlijs', 'Augusts', 'Septembris', 'Oktobris', 'Novembris', 'Decembris'];
+
+    const today = new Date(now);
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay());
+
+    let weekHTML = `
+        <div class="calendar-week">
+            <div class="calendar-header">
+                <h3>${monthNames[today.getMonth()]} ${today.getFullYear()}</h3>
+            </div>
+    `;
+
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(startOfWeek);
+        date.setDate(startOfWeek.getDate() + i);
+
+        const dateStr = formatLocalDate(date);
+        const dayTickets = tickets.filter(t => t.created_date_local === dateStr);
+        const isToday = formatLocalDate(date) === formatLocalDate(now);
+
+        let urgentCount = dayTickets.filter(t => t.priority === 'urgent').length;
+
+        let ticketsHTML = '';
+        dayTickets.forEach(t => {
+            ticketsHTML += `<div class="calendar-ticket">#${t.id} - ${t.title}</div>`;
+        });
+
+        weekHTML += `
+            <div class="calendar-day ${isToday ? 'today' : ''} ${dayTickets.length ? 'has-tickets' : ''}">
+                <div class="calendar-day-top">
+                    <span class="calendar-day-name">${dayNames[date.getDay()]}</span>
+                    <span class="calendar-day-date">${date.getDate()}</span>
+                </div>
+
+                <div class="calendar-day-meta">
+                    <small>${dayTickets.length} biļete(s)</small>
+                    ${urgentCount > 0 ? `<span class="badge calendar-badge-urgent">${urgentCount} Steidzama(s)</span>` : ''}
+                </div>
+
+                <div class="calendar-tickets">
+                    ${ticketsHTML}
+                </div>
+            </div>
+        `;
+    }
+
+    weekHTML += `</div>`;
+    return weekHTML;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Only run calendar code if we're on the calendar page
     if (document.getElementById('calendar') && window.calendarData) {
         const tickets = window.calendarData;
         const now = new Date();
@@ -212,16 +255,57 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentMonth = lvNow.getMonth();
         
         let calendarHTML = '';
-        
-        // Render current month and next 2 months
-        for (let i = 0; i < 3; i++) {
-            const monthToRender = currentMonth + i;
-            const yearToRender = currentYear + Math.floor(monthToRender / 12);
-            const adjustedMonth = monthToRender % 12;
-            
-            calendarHTML += renderMonth(yearToRender, adjustedMonth, tickets, now);
+
+        const isMobile = window.innerWidth <= 768;
+
+        if (isMobile) {
+            // Mobile - current week view
+            calendarHTML += renderWeek(now, tickets);
+        } else {
+            // Desktop - 3 months view
+            for (let i = 0; i < 3; i++) {
+                const monthToRender = currentMonth + i;
+                const yearToRender = currentYear + Math.floor(monthToRender / 12);
+                const adjustedMonth = monthToRender % 12;
+                
+                calendarHTML += renderMonth(yearToRender, adjustedMonth, tickets, now);
+            }
         }
         
         document.getElementById('calendar').innerHTML = calendarHTML;
     }
+});
+
+// renders the right view when resizing the window (week - mobile, months - desktop)
+let resizeTimeout;
+
+window.addEventListener('resize', function () {
+    clearTimeout(resizeTimeout);
+
+    resizeTimeout = setTimeout(() => {
+        if (document.getElementById('calendar') && window.calendarData) {
+            const tickets = window.calendarData;
+            const now = new Date();
+            const lvNow = new Date(now.toLocaleString('en-US', { timeZone: calendarTimeZone }));
+            const currentYear = lvNow.getFullYear();
+            const currentMonth = lvNow.getMonth();
+            
+            let calendarHTML = '';
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                calendarHTML += renderWeek(now, tickets);
+            } else {
+                for (let i = 0; i < 3; i++) {
+                    const monthToRender = currentMonth + i;
+                    const yearToRender = currentYear + Math.floor(monthToRender / 12);
+                    const adjustedMonth = monthToRender % 12;
+                    
+                    calendarHTML += renderMonth(yearToRender, adjustedMonth, tickets, now);
+                }
+            }
+            
+            document.getElementById('calendar').innerHTML = calendarHTML;
+        }
+    }, 150);
 });

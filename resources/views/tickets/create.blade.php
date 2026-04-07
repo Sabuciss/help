@@ -6,7 +6,7 @@
 <div class="card">
     <div class="card-header">
         <h2>Jauna IT biļete</h2>
-    </div>
+    </div><br>
 
     <form method="POST" action="{{ route('tickets.store') }}" enctype="multipart/form-data">
         @csrf

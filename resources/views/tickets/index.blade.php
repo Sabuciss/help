@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="card-header" style="margin-bottom: 2rem;">
-    <h2>Manas biļetes</h2>
+    <h2 style="margin-bottom:10px;">Manas biļetes</h2>
     <a href="{{ route('tickets.create') }}" class="btn btn-primary">Jauna biļete</a>
 </div>
 
@@ -68,6 +68,56 @@
             @endforeach
         </tbody>
     </table>
+
+    <!-- mobile card view -->
+    <div class="tickets-cards">
+        @foreach($tickets as $ticket)
+            <div class="ticket-card">
+                <!-- Header -->
+                <div class="ticket-card-header">
+                    <span class="ticket-title"><strong>{{ $ticket->title }}</strong></span>
+                    <span class="badge badge-{{ $ticket->priority }}" style="margin-bottom:10px;">
+                        @switch($ticket->priority)
+                            @case('low') Zema @break
+                            @case('medium') Vidēja @break
+                            @case('high') Augsta @break
+                            @case('urgent') Steidzama @break
+                        @endswitch
+                    </span>
+                </div>
+
+                <!-- Info rows -->
+                <p>
+                    <strong class="ticket-status">Statuss:</strong>
+                    <span class="badge badge-{{ $ticket->status }}" style="margin:5px 0;">
+                        @switch($ticket->status)
+                            @case('open') Atvērta @break
+                            @case('in_progress') Tiek risināta @break
+                            @case('resolved') Atrisināta @break
+                            @case('closed') Slēgta @break
+                        @endswitch
+                    </span>
+                </p>
+
+                <p><strong>Izveidota:</strong> {{ $ticket->created_at->format('d.m.Y') }}</p>
+
+                <!-- Footer -->
+                <div class="user-ticket-card-footer">
+                    <a href="{{ route('tickets.show', $ticket) }}" class="btn btn-primary btn-small" style="margin-top:20px;">Redzēt</a>
+                    @if($ticket->status !== 'closed')
+                        <span class="user-edit-delete-btns">
+                            <a href="{{ route('tickets.edit', $ticket) }}" class="btn btn-secondary btn-small" style="width:50%;">Rediģēt</a>
+                            <form method="POST" action="{{ route('tickets.destroy', $ticket) }}" style="display:inline; width:50%;" onsubmit="return confirm('Vai tiešam dzēst?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-small">Dzēst</button>
+                            </form>
+                        </span>
+                    @endif
+                </div>
+            </div>
+        @endforeach
+    </div>
 
     <div>
         {{ $tickets->links() }}

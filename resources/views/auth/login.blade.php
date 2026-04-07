@@ -7,7 +7,7 @@
     <div class="card">
         <div class="card-header">
             <h2>Pieslēgties</h2>
-        </div>
+        </div><br>
 
         <form method="POST" action="{{ route('login') }}">
             @csrf

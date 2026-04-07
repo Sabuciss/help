@@ -24,12 +24,13 @@
 </div>
 
 <div class="card-header" style="margin-bottom: 2rem;">
-    <h2>IT biļetes - Administratīvais skatījums</h2>
+    <h2 style="margin-bottom:10px;">IT biļetes - Administratīvais skatījums</h2>
     <a href="{{ route('tickets.calendar') }}" class="btn btn-secondary">Kalendāra skats</a>
 </div>
 
+<!-- Filter Form -->
 <div class="card" style="margin-bottom: 2rem;">
-    <form method="GET" action="{{ route('tickets.admin-index') }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
+    <form method="GET" action="{{ route('tickets.admin-index') }}" class="filter-form">
         <div class="form-group">
             <label for="filter_id">ID</label>
             <input type="number" id="filter_id" name="id" value="{{ request('id') }}" placeholder="#">
@@ -70,6 +71,7 @@
     </form>
 </div>
 
+<!-- Ticket output -->
 @if($tickets->count() > 0)
     <table>
         <thead>
@@ -159,6 +161,60 @@
             @endforeach
         </tbody>
     </table>
+
+    <!-- mobile card view -->
+    <div class="tickets-cards">
+        @foreach($tickets as $ticket)
+            <div class="ticket-card">
+                <!-- Header -->
+                <div class="ticket-card-header">
+                    <span class="ticket-id"><strong>#{{ $ticket->id }}</strong></span>
+                    <span class="ticket-title"><strong>{{ $ticket->title }}</strong></span>
+                    <span class="badge badge-{{ $ticket->priority }}" style="margin-bottom:10px;">
+                        @switch($ticket->priority)
+                            @case('low') Zema @break
+                            @case('medium') Vidēja @break
+                            @case('high') Augsta @break
+                            @case('urgent') Steidzama @break
+                        @endswitch
+                    </span>
+                </div>
+
+                <!-- Info rows -->
+                <p><strong>Autors:</strong> {{ $ticket->user->name }}</p>
+                <p><strong>Klase / Nodaļa:</strong> {{ $ticket->class_department ?? '-' }}</p>
+                <p><strong>Kategorija:</strong> {{ $ticket->category ? ucfirst($ticket->category) : '-' }}</p>
+
+                <p>
+                    <strong class="ticket-status">Statuss:</strong>
+                    <span class="badge badge-{{ $ticket->status }}" style="margin:5px 0;">
+                        @switch($ticket->status)
+                            @case('open') Atvērta @break
+                            @case('in_progress') Tiek risināta @break
+                            @case('resolved') Atrisināta @break
+                            @case('closed') Slēgta @break
+                        @endswitch
+                    </span>
+                </p>
+
+                <p>
+                    <strong>Piešķirts:</strong>
+                    @if($ticket->assignedTo)
+                        {{ $ticket->assignedTo->name }}
+                    @else
+                        <span style="color: #e74c3c;">Nav piešķirta</span>
+                    @endif
+                </p>
+
+                <p><strong>Izveidota:</strong> {{ $ticket->created_at->format('d.m.Y') }}</p>
+
+                <!-- Footer -->
+                <div class="ticket-card-footer">
+                    <a href="{{ route('tickets.show', $ticket) }}" class="btn btn-primary btn-small" style="margin-top:20px;">Redzēt</a>
+                </div>
+            </div>
+        @endforeach
+    </div>
 
     <div>
         {{ $tickets->links() }}

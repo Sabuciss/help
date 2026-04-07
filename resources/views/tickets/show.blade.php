@@ -9,7 +9,7 @@
             <h2>{{ $ticket->title }}</h2>
             <small style="color: #7f8c8d;">Biļete #{{ $ticket->id }} - {{ $ticket->created_at->format('d.m.Y H:i') }}</small>
         </div>
-        <div style="display: flex; gap: 0.5rem;">
+        <div style="display:flex; gap:0.5rem; margin:10px 0;">
             <span class="badge badge-{{ $ticket->status }}">
                 @switch($ticket->status)
                     @case('open')
@@ -51,7 +51,12 @@
                                     📎
                                 @endif
                                 {{ $attachment->file_name }} 
-                                <small>({{ number_format($attachment->size / 1024, 2) }} KB)</small>
+
+                                @if($attachment->size >= 1048576)
+                                    <small>({{ number_format($attachment->size / 1024 / 1024, 2) }} MB)</small>
+                                @else
+                                    <small>({{ number_format($attachment->size / 1024, 2) }} KB)</small>
+                                @endif
                             </span>
                             <a href="{{ route('attachments.download', $attachment) }}" class="btn btn-primary btn-small">Lejupielādēt</a>
                         </li>
@@ -66,41 +71,34 @@
                 <h4 style="margin-bottom: 1rem;">Informācija</h4>
                 
                 <p style="margin-bottom: 1rem;">
-                    <strong>Autors:</strong><br>
-                    {{ $ticket->user->name }}<br>
+                    <strong>Autors:</strong> {{ $ticket->user->name }}<br>
                     <small style="color: #7f8c8d;">{{ $ticket->user->email }}</small>
                 </p>
 
                 <p style="margin-bottom: 1rem;">
-                    <strong>Vārds, uzvārds:</strong><br>
-                    {{ $ticket->first_name ?? '-' }} {{ $ticket->last_name ?? '' }}
+                    <strong>Vārds, uzvārds:</strong> {{ $ticket->first_name ?? '-' }} {{ $ticket->last_name ?? '' }}
                 </p>
 
                 <p style="margin-bottom: 1rem;">
-                    <strong>Klase / Nodaļa:</strong><br>
-                    {{ $ticket->class_department ?? '-' }}
+                    <strong>Klase / Nodaļa:</strong> {{ $ticket->class_department ?? '-' }}
                 </p>
 
                 <p style="margin-bottom: 1rem;">
-                    <strong>Kategorija:</strong><br>
-                    {{ $ticket->category ? ucfirst($ticket->category) : '-' }}
+                    <strong>Kategorija:</strong> {{ $ticket->category ? ucfirst($ticket->category) : '-' }}
                 </p>
 
                 @if($ticket->assignedTo)
                     <p style="margin-bottom: 1rem;">
-                        <strong>Piešķirts:</strong><br>
-                        {{ $ticket->assignedTo->name }}
+                        <strong>Piešķirts:</strong> {{ $ticket->assignedTo->name }}
                     </p>
                 @endif
 
                 <p style="margin-bottom: 1rem;">
-                    <strong>Izveidota:</strong><br>
-                    {{ $ticket->created_at->format('d.m.Y H:i') }}
+                    <strong>Izveidota:</strong> {{ $ticket->created_at->format('d.m.Y H:i') }}
                 </p>
 
                 <p style="margin-bottom: 1rem;">
-                    <strong>Pēdējais atjauninājums:</strong><br>
-                    {{ $ticket->updated_at->format('d.m.Y H:i') }}
+                    <strong>Pēdējais atjauninājums:</strong> {{ $ticket->updated_at->format('d.m.Y H:i') }}
                 </p>
 
                 <!-- Admin controls -->
@@ -179,7 +177,7 @@
                             </form>
                         @endif
                     </div>
-                    <p>{{ nl2br(e($comment->comment)) }}</p>
+                    <p>{!! nl2br(e($comment->comment)) !!}</p>
                 </div>
             @endforeach
         @else

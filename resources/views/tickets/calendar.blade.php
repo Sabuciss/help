@@ -5,7 +5,7 @@
 @section('content')
 <div class="card">
     <div class="card-header">
-        <h2>Biļešu skaits pa dienām</h2>
+        <h2 style="margin-bottom:10px;">Biļešu skaits pa dienām</h2>
         <a href="{{ route('tickets.calendar-export') }}" class="btn btn-secondary">Eksportēt PDF</a>
     </div>
 
@@ -15,7 +15,7 @@
 </div>
 
 <div class="card">
-    <h3>Darbības noslodze</h3>
+    <h3>Darbības noslodze</h3><br>
     <div class="grid">
         <div class="stat-box">
             <div class="stat-box-number">{{ $stats['total'] }}</div>

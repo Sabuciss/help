@@ -97,9 +97,14 @@
                                             📎
                                         @endif
                                         {{ $attachment->file_name }}
-                                        <small>({{ number_format($attachment->size / 1024, 2) }} KB)</small>
+                                        
+                                        @if($attachment->size >= 1048576)
+                                            <small>({{ number_format($attachment->size / 1024 / 1024, 2) }} MB)</small>
+                                        @else
+                                            <small>({{ number_format($attachment->size / 1024, 2) }} KB)</small>
+                                        @endif
                                     </span>
-                                    <div>
+                                    <div class="attachment-actions">
                                         <a href="{{ route('attachments.download', $attachment) }}" class="btn btn-primary btn-small">Lejupielādēt</a>
                                     </div>
                                 </li>
@@ -212,9 +217,14 @@
                                             📎
                                         @endif
                                         {{ $attachment->file_name }}
-                                        <small>({{ number_format($attachment->size / 1024, 2) }} KB)</small>
+
+                                        @if($attachment->size >= 1048576)
+                                            <small>({{ number_format($attachment->size / 1024 / 1024, 2) }} MB)</small>
+                                        @else
+                                            <small>({{ number_format($attachment->size / 1024, 2) }} KB)</small>
+                                        @endif
                                     </span>
-                                    <div>
+                                    <div class="attachment-actions">
                                         <a href="{{ route('attachments.download', $attachment) }}" class="btn btn-primary btn-small">Lejupielādēt</a>
                                         <button type="button" onclick="deleteAttachment({{ $attachment->id }}, '{{ $attachment->file_name }}')" class="btn btn-danger btn-small">Noņemt</button>
                                     </div>
